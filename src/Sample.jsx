@@ -2,11 +2,12 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import './Sample.css';
 
-import { Box, Modal } from '@mui/material';
+import { Box, IconButton, Modal } from '@mui/material';
 import { Document, Page, pdfjs } from 'react-pdf';
 import React, { useState } from 'react';
 
 import Button from '@mui/material/Button';
+import CloseIcon from '@mui/icons-material/Close';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -40,15 +41,16 @@ export default function Sample() {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: {
-      xs: '90vw',
+      xs: '100vw',
       md: 800
     },
     bgcolor: 'background.paper',
+    // bgcolor: 'rgba(255,255,255,0.5)',
     border: '2px solid #000',
     boxShadow: 24,
-    p: 4,
+    p: 1,
 
-    height: isScrolled ? '70%' : '100%',
+    height: isScrolled ? '90vh' : '100%',
     overflowY: isScrolled ? 'scroll' : 'hidden'
   };
 
@@ -62,8 +64,10 @@ export default function Sample() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={boxStyle} className="Example__container__document">
-
-          <Button onClick={() => setIsScrolled(!isScrolled)}>Toggle Scrolled</Button>
+          <Box display={'flex'} justifyContent={'space-between'}>
+            <Button onClick={() => setIsScrolled(!isScrolled)}>Toggle Scrolled</Button>
+            <IconButton onClick={handleClose}><CloseIcon /></IconButton>
+          </Box>
 
           {!isScrolled &&
             <Box justifyContent="flex-end">

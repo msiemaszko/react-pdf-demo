@@ -15,7 +15,7 @@ function App() {
         <Page pageNumber={pageNumber} />
       </Document>
       <p>
-        Page {pageNumber} of {numPages}
+        Strona {pageNumber} z {numPages}
       </p>
     </div>
   );

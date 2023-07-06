@@ -2,7 +2,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import './Sample.css';
 
-import { Box, IconButton, Modal } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { Document, Page, pdfjs } from 'react-pdf';
 import React, { useState } from 'react';
 
@@ -21,6 +21,8 @@ const options = {
 
 
 export default function Sample() {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const [file, setFile] = useState('./demo_form.pdf');
   const [numPages, setNumPages] = useState();
@@ -33,61 +35,56 @@ export default function Sample() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  const boxStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: {
-      xs: '100vw',
-      md: 800
-    },
-    bgcolor: 'background.paper',
-    // bgcolor: 'rgba(255,255,255,0.5)',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 1,
-
-    height: isScrolled ? '90vh' : '100%',
-    overflowY: isScrolled ? 'scroll' : 'hidden'
-  };
+  const [isScrolled, setIsScrolled] = useState(true);
 
   return (
-    <React.Fragment>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
+    <>
+      <Button variant='contained' onClick={handleOpen}>Open modal</Button>
+      <Dialog
+        fullScreen={fullScreen}
+        maxWidth={'lg'}
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        scroll={'paper'}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
       >
-        <Box sx={boxStyle} className="Example__container__document">
-          <Box display={'flex'} justifyContent={'space-between'}>
-            <Button onClick={() => setIsScrolled(!isScrolled)}>Toggle Scrolled</Button>
-            <IconButton onClick={handleClose}><CloseIcon /></IconButton>
-          </Box>
-
+        <DialogTitle id="scroll-dialog-title">
+          <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            Title
+            <IconButton size='small' onClick={handleClose}><CloseIcon /></IconButton>
+          </Stack>
+        </DialogTitle>
+        <DialogContent dividers>
+          <DialogContentText
+            id="scroll-dialog-description"
+            // ref={descriptionElementRef}
+            tabIndex={-1}
+            sx={{ overflow: 'hidden' }}
+            className="Example__container__document"
+          >
+            <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
+              {!isScrolled
+                ? <Page pageNumber={pageNumber} />
+                :
+                Array.from(new Array(numPages), (el, index) => (
+                  <Page scale={1.5} key={`page_${index + 1}`} pageNumber={index + 1} />
+                ))
+              }
+            </Document>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button onClick={() => setIsScrolled(!isScrolled)}>Toggle Scrolled</Button>
           {!isScrolled &&
-            <Box justifyContent="flex-end">
+            <Box>
               <Button onClick={() => setPageNumber((Math.max(pageNumber - 1, 1)))}>prev</Button>
               Page {pageNumber} of {numPages}
               <Button onClick={() => setPageNumber(Math.min(pageNumber + 1, numPages))}>next</Button>
             </Box>
           }
-
-          <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
-            {!isScrolled
-              ? <Page pageNumber={pageNumber} />
-              :
-              Array.from(new Array(numPages), (el, index) => (
-                <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-              ))
-            }
-          </Document>
-        </Box>
-      </Modal>
-    </React.Fragment>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

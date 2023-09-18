@@ -39,7 +39,16 @@ export default function Sample() {
 
   return (
     <>
-      <Button variant='contained' onClick={handleOpen}>Open modal</Button>
+    <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}>
+              {!isScrolled
+                ? <Page pageNumber={pageNumber} />
+                :
+                Array.from(new Array(numPages), (el, index) => (
+                  <Page scale={1.5} key={`page_${index + 1}`} pageNumber={index + 1} />
+                ))
+              }
+            </Document>
+      {/* <Button variant='contained' onClick={handleOpen}>Open modal</Button>
       <Dialog
         fullScreen={fullScreen}
         maxWidth={'lg'}
@@ -84,7 +93,7 @@ export default function Sample() {
             </Box>
           }
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }
